@@ -1,6 +1,6 @@
 use crate::config::*;
 use crate::enties::snake::Snake;
-use crate::systems::*;
+use crate::functions::*;
 
 use macroquad::prelude::*;
 
@@ -49,7 +49,6 @@ impl App {
 
                 // Logging
                 // println!("[Info] head direction : {:?}", self.snake.head_dir);
-                println!();
             }
             self.draw();
             next_frame().await;
