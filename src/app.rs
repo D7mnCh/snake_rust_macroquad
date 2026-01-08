@@ -5,6 +5,7 @@ use crate::systems::*;
 use macroquad::prelude::*;
 
 pub struct App {
+    //snake_body
     snake: Snake,
     game_running: bool,
 }
@@ -44,10 +45,11 @@ impl App {
             self.input_handling();
             if time_since_last_update >= TARGET_FPS {
                 self.update();
-                // then enable the changes
-
-                // println!("{time_since_last_update}");
                 time_since_last_update = 0.0;
+
+                // Logging
+                // println!("[Info] head direction : {:?}", self.snake.head_dir);
+                println!();
             }
             self.draw();
             next_frame().await;

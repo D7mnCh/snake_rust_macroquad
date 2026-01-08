@@ -6,40 +6,51 @@ use direction::*;
 use macroquad::prelude::*;
 
 pub struct Snake {
-    position: Vec2,
-    size: Vec2,
-    dir: Direction,
+    head_pos: Vec2,
+    tail_pos: Vec2,
+    pub head_dir: Direction,
     color: Color,
 }
 impl Snake {
-    pub fn new(position: Vec2, size: Vec2, dir: Direction, color: Color) -> Self {
+    pub fn new(head_pos: Vec2, tail_pos: Vec2, head_dir: Direction, color: Color) -> Self {
         Self {
-            position,
-            size,
-            dir,
+            head_pos,
+            tail_pos,
+            head_dir,
             color,
         }
     }
-    pub fn input_handling(&mut self) {
-        if is_key_pressed(KeyCode::J) && self.dir.can_change_to(Direction::Down) {
-            self.dir = Direction::Down
-        } else if is_key_pressed(KeyCode::K) && self.dir.can_change_to(Direction::Up) {
-            self.dir = Direction::Up
-        } else if is_key_pressed(KeyCode::H) && self.dir.can_change_to(Direction::Left) {
-            self.dir = Direction::Left
-        } else if is_key_pressed(KeyCode::L) && self.dir.can_change_to(Direction::Right) {
-            self.dir = Direction::Right
+    fn wall_collistion(&mut self) {
+        // Head
+        if self.head_pos.x + SNAKE_SIZE > WIDTH as f32 {
+            self.head_pos.x = 0.
+        } else if self.head_pos.x < 0. as f32 {
+            self.head_pos.x = WIDTH as f32 - SNAKE_SIZE
+        } else if self.head_pos.y + SNAKE_SIZE > HEIGHT as f32 {
+            self.head_pos.y = 0.
+        } else if self.head_pos.y < 0. {
+            self.head_pos.y = HEIGHT as f32 - SNAKE_SIZE
+        }
+        // Tail
+        if self.tail_pos.x + SNAKE_SIZE > WIDTH as f32 {
+            self.tail_pos.x = 0.
+        } else if self.tail_pos.x < 0. as f32 {
+            self.tail_pos.x = WIDTH as f32 - SNAKE_SIZE
+        } else if self.tail_pos.y + SNAKE_SIZE > HEIGHT as f32 {
+            self.tail_pos.y = 0.
+        } else if self.tail_pos.y < 0. {
+            self.tail_pos.y = HEIGHT as f32 - SNAKE_SIZE
         }
     }
-    fn wall_collistion(&mut self) {
-        if self.position.x + self.size.x > WIDTH as f32 {
-            self.position.x = 0.
-        } else if self.position.x < 0. as f32 {
-            self.position.x = WIDTH as f32 - self.size.x
-        } else if self.position.y + self.size.y > HEIGHT as f32 {
-            self.position.y = 0.
-        } else if self.position.y < 0. {
-            self.position.y = HEIGHT as f32 - self.size.y
+    pub fn input_handling(&mut self) {
+        if is_key_pressed(KeyCode::J) && self.head_dir.can_change_to(Direction::Down) {
+            self.head_dir = Direction::Down
+        } else if is_key_pressed(KeyCode::K) && self.head_dir.can_change_to(Direction::Up) {
+            self.head_dir = Direction::Up
+        } else if is_key_pressed(KeyCode::H) && self.head_dir.can_change_to(Direction::Left) {
+            self.head_dir = Direction::Left
+        } else if is_key_pressed(KeyCode::L) && self.head_dir.can_change_to(Direction::Right) {
+            self.head_dir = Direction::Right
         }
     }
     pub fn update(&mut self) {
@@ -47,21 +58,32 @@ impl Snake {
         //as an exmaple !
         // accept the input but enable changes to the snake only after update logic happend
         // must not update the snake pos between the frames
-        match self.dir {
-            Direction::Up => self.position.y -= GRID_BOX,
-            Direction::Down => self.position.y += GRID_BOX,
-            Direction::Right => self.position.x += GRID_BOX,
-            Direction::Left => self.position.x -= GRID_BOX,
+
+        let old_head_pos: Vec2 = self.head_pos.clone();
+        self.tail_pos.x = old_head_pos.x;
+        self.tail_pos.y = old_head_pos.y;
+        match self.head_dir {
+            Direction::Up => self.head_pos.y -= GRID_BOX,
+            Direction::Down => self.head_pos.y += GRID_BOX,
+            Direction::Right => self.head_pos.x += GRID_BOX,
+            Direction::Left => self.head_pos.x -= GRID_BOX,
         }
         self.wall_collistion();
     }
     pub fn draw(&self) {
         draw_rectangle(
-            self.position.x,
-            self.position.y,
-            self.size.x,
-            self.size.y,
+            self.head_pos.x,
+            self.head_pos.y,
+            SNAKE_SIZE,
+            SNAKE_SIZE,
             self.color,
+        );
+        draw_rectangle(
+            self.tail_pos.x,
+            self.tail_pos.y,
+            SNAKE_SIZE,
+            SNAKE_SIZE,
+            BLUE,
         );
     }
 }
