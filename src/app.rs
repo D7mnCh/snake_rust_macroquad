@@ -31,7 +31,7 @@ impl App {
     }
     pub fn draw(&mut self) {
         clear_background(BLACK);
-        grid_draw();
+        // grid_draw();
         self.snake.draw();
     }
     pub async fn run(&mut self) {
@@ -48,7 +48,10 @@ impl App {
                 time_since_last_update = 0.0;
 
                 // Logging
-                // println!("[Info] head direction : {:?}", self.snake.head_dir);
+                for (i, cell) in self.snake.pos.iter().enumerate() {
+                    println!("[Info] cell num {i} position is : {:?}", cell);
+                }
+                println!();
             }
             self.draw();
             next_frame().await;

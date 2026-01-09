@@ -14,21 +14,18 @@ use crate::functions::*;
 async fn main() {
     let game_running: bool = true;
 
-    // let _snake_tail: Vec<Vec2> = Vec::new();
-    let snake_tail_position = vec![Vec2::new(
-        WIDTH as f32 / 2.,
-        HEIGHT as f32 / 2. + GRID_BOX as f32,
-    )]; // (440, 400)
+    let mut snake_position = Vec::new();
+    for i in 1..10 {
+        let new_cell = Vec2::new(
+            WIDTH as f32 / 2.,
+            HEIGHT as f32 / 2. + (GRID_BOX * i as f32) as f32,
+        );
+        snake_position.push(new_cell);
+    }
 
-    let snake_head_position = Vec2::new(WIDTH as f32 / 2., HEIGHT as f32 / 2.); //(400, 400)
     let snake_head_dir = Direction::Up;
 
-    let snake: Snake = Snake::new(
-        snake_head_position,
-        snake_tail_position,
-        snake_head_dir,
-        GOLD,
-    );
+    let snake: Snake = Snake::new(snake_position, snake_head_dir, GOLD);
 
     let mut game: App = App::new(snake, game_running);
     game.run().await;
