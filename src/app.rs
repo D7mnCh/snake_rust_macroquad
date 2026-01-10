@@ -1,17 +1,21 @@
 use crate::config::*;
-use crate::enties::snake::Snake;
+use crate::enties::{food::Food, snake::Snake};
 // use crate::functions::*;
 
 use macroquad::prelude::*;
 
-pub struct App {
-    snake: Snake,
+pub struct App<'a> {
+    snake: Snake<'a>,
+    food: Food<'a>,
+    score: i32,
     game_running: bool,
 }
-impl App {
-    pub fn new(snake: Snake, game_running: bool) -> Self {
+impl<'a> App<'a> {
+    pub fn new(snake: Snake<'a>, food: Food<'a>, score: i32, game_running: bool) -> Self {
         Self {
             snake,
+            food,
+            score,
             game_running,
         }
     }
@@ -27,11 +31,20 @@ impl App {
     }
     pub fn update(&mut self) {
         self.snake.update();
+        self.score();
+        self.food.update(&mut self.snake);
     }
     pub fn draw(&mut self) {
         clear_background(BLACK);
         // grid_draw();
         self.snake.draw();
+        self.food.draw();
+    }
+    pub fn score(&mut self) {
+        if self.snake.pos[0] == self.food.pos {
+            self.score += 1;
+            println!("nice catch friendo");
+        }
     }
     pub async fn run(&mut self) {
         let mut time_since_last_update = 0.0;
@@ -51,6 +64,7 @@ impl App {
 
             if time_since_last_update >= TARGET_FPS {
                 self.update();
+                self.snake.collision();
                 time_since_last_update = 0.0;
                 input_handling_counter = 0;
 
@@ -58,6 +72,8 @@ impl App {
                 for (i, cell) in self.snake.pos.iter().enumerate() {
                     println!("[Info] cell num {i} position is : {:?}", cell);
                 }
+                println!();
+                println!("[Info] snake score: {}", self.score);
             }
             self.draw();
             next_frame().await;

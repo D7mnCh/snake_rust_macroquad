@@ -1,4 +1,5 @@
 use crate::config::*;
+// use crate::enties::{food::Food, snake::Snake};
 use macroquad::miniquad::conf::Platform;
 use macroquad::prelude::*;
 

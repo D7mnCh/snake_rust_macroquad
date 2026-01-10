@@ -2,20 +2,21 @@
 use crate::config::*;
 pub mod direction;
 
+use crate::Assests;
 use direction::*;
 use macroquad::prelude::*;
 
-pub struct Snake {
+pub struct Snake<'a> {
     pub pos: Vec<Vec2>,
     head_dir: Direction,
-    color: Color,
+    texture: &'a Assests,
 }
-impl Snake {
-    pub fn new(pos: Vec<Vec2>, head_dir: Direction, color: Color) -> Self {
+impl<'a> Snake<'a> {
+    pub fn new(pos: Vec<Vec2>, head_dir: Direction, texture: &'a Assests) -> Self {
         Self {
             pos,
             head_dir,
-            color,
+            texture,
         }
     }
     fn wall_collistion(&mut self) {
@@ -59,6 +60,7 @@ impl Snake {
             Direction::Left => self.pos[0].x -= GRID_BOX,
         }
 
+        // Tail
         for i in 0..self.pos.len() {
             if i != 0 {
                 // i need to store the postion of the current cell first
@@ -68,11 +70,55 @@ impl Snake {
                 old_cell_pos = current_cell_pos;
             }
         }
+
         self.wall_collistion();
     }
+    pub fn collision(&self) {
+        for i in 1..self.pos.len() {
+            if self.pos[0] == self.pos[i] {
+                println!("snake head collide with his tail !");
+                // TODO make like you Lose text or something
+            }
+        }
+    }
     pub fn draw(&self) {
-        for cell in self.pos.iter() {
-            draw_rectangle(cell.x, cell.y, SNAKE_SIZE, SNAKE_SIZE, BLUE);
+        for (i, cell) in self.pos.iter().enumerate() {
+            if i != 0 {
+                draw_rectangle(
+                    cell.x,
+                    cell.y,
+                    SNAKE_SIZE,
+                    SNAKE_SIZE,
+                    Color {
+                        r: 0.078431,
+                        g: 0.203922,
+                        b: 0.392157,
+                        a: 1.0,
+                    },
+                );
+                // draw_texture(&self.texture.tail_sprite, cell.x, cell.y, WHITE);
+            } else {
+                draw_rectangle(
+                    cell.x,
+                    cell.y,
+                    SNAKE_SIZE,
+                    SNAKE_SIZE,
+                    Color {
+                        r: 0.156863,
+                        g: 0.360784,
+                        b: 0.768627,
+                        a: 1.0,
+                    },
+                );
+                // draw_texture(&self.texture.haid_sprite, cell.x, cell.y, WHITE);
+            }
         }
     }
 }
+/*
+make gradient on snake body using the blue one, or it could be rainbow
+make a score
+make Ui struct ? and methods
+
+- i have very nive ideas but i am on debt of trying to implemnet them
+*/

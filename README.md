@@ -23,3 +23,4 @@ building a snake game to learn more about rust using the macroquad library, and 
 - [ ] make Screenshots
 - [ ] link the web page
 - [ ] how to build the game from source
+- [ ] fix the snake look when a texture applied to him 
