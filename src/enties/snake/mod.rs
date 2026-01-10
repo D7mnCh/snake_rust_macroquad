@@ -31,22 +31,24 @@ impl Snake {
             }
         }
     }
-    pub fn input_handling(&mut self) {
+    pub fn input_handling(&mut self) -> i32 {
         if is_key_pressed(KeyCode::J) && self.head_dir.can_change_to(Direction::Down) {
-            self.head_dir = Direction::Down
+            self.head_dir = Direction::Down;
+            1
         } else if is_key_pressed(KeyCode::K) && self.head_dir.can_change_to(Direction::Up) {
-            self.head_dir = Direction::Up
+            self.head_dir = Direction::Up;
+            1
         } else if is_key_pressed(KeyCode::H) && self.head_dir.can_change_to(Direction::Left) {
-            self.head_dir = Direction::Left
+            self.head_dir = Direction::Left;
+            1
         } else if is_key_pressed(KeyCode::L) && self.head_dir.can_change_to(Direction::Right) {
-            self.head_dir = Direction::Right
+            self.head_dir = Direction::Right;
+            1
+        } else {
+            0
         }
     }
     pub fn update(&mut self) {
-        // bug i can change to opposite direction if i pressed top/bottom and then the opposite direction
-        //as an exmaple ! (need to be fast a little)
-        // accept the input but enable changes to the snake only after update logic happend
-        // must not update the snake pos between the frames
         let mut old_cell_pos = self.pos[0];
 
         // Head
