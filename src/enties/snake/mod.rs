@@ -83,16 +83,16 @@ impl<'a> Snake<'a> {
     }
     pub fn draw(&self) {
         for (i, cell) in self.pos.iter().enumerate() {
-            if i != 0 {
+            if i == 0 {
                 draw_rectangle(
                     cell.x,
                     cell.y,
                     SNAKE_SIZE,
                     SNAKE_SIZE,
                     Color {
-                        r: 0.078431,
-                        g: 0.203922,
-                        b: 0.392157,
+                        r: 0.156863,
+                        g: 0.360784,
+                        b: 0.768627,
                         a: 1.0,
                     },
                 );
@@ -104,9 +104,9 @@ impl<'a> Snake<'a> {
                     SNAKE_SIZE,
                     SNAKE_SIZE,
                     Color {
-                        r: 0.156863,
-                        g: 0.360784,
-                        b: 0.768627,
+                        r: 0.078431,
+                        g: 0.203922,
+                        b: 0.392157,
                         a: 1.0,
                     },
                 );

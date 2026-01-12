@@ -14,9 +14,10 @@ building a snake game to learn more about rust using the macroquad library, and 
 > the answer is.. i like using vim motion, i don't really care if you don't like it...
 
 ## Settings
-| Keys   | action                  |
-| ------ | ----------------------  |
-| `Esc`  |  quit the game          |
+| Keys          | action                  |
+| ------------- | ----------------------- |
+| `Esc` or `q`  | quit the game           |
+| `Space`       | suspend the game        |
 
 ## TODO
 
