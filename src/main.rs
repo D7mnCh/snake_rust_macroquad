@@ -21,7 +21,7 @@ async fn main() {
     rand::srand(macroquad::miniquad::date::now() as _);
 
     // for game loop
-    let game_running: bool = true;
+    let game_running: bool = false;
     let is_app_running: bool = true;
     // making score
     let mut score = 0;
@@ -31,10 +31,10 @@ async fn main() {
 
     // building snake
     let mut snake_cells_position = Vec::new();
-    for i in 0..=3 {
+    for i in 0..=10 {
         let new_cell = Vec2::new(
             WIDTH as f32 / 2.,
-            HEIGHT as f32 / 2. + (GRID_BOX * i as f32) as f32,
+            HEIGHT as f32 / 2. + (GRID_BOX * i) as f32,
         );
         snake_cells_position.push(new_cell);
     }
@@ -43,9 +43,9 @@ async fn main() {
 
     // building food
     let food_pos = vec![
-        Vec2::new(280., 520.),
-        Vec2::new(480., 480.),
-        Vec2::new(160., 520.),
+        Vec2::new(random_spot(WIDTH), random_spot(HEIGHT)),
+        Vec2::new(random_spot(WIDTH), random_spot(HEIGHT)),
+        Vec2::new(random_spot(WIDTH), random_spot(HEIGHT)),
     ];
     let food = Food::new(
         food_pos,
@@ -65,3 +65,7 @@ async fn main() {
     let mut game: App = App::new(snake, food, ui, &mut score, game_running, is_app_running);
     game.run().await;
 }
+
+/*
+- can you please fix the position of the window on the web...
+*/

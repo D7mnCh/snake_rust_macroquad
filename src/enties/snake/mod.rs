@@ -8,7 +8,7 @@ use macroquad::prelude::*;
 
 pub struct Snake<'a> {
     pub pos: Vec<Vec2>,
-    head_dir: Direction,
+    pub head_dir: Direction,
     texture: &'a Assests,
 }
 impl<'a> Snake<'a> {
@@ -49,15 +49,27 @@ impl<'a> Snake<'a> {
             0
         }
     }
+    pub fn reset(&mut self) {
+        // if the player press r then reset and remove the defaited display
+        self.head_dir = Direction::Up;
+        self.pos.clear();
+        for i in 0..=10 {
+            let new_cell = Vec2::new(
+                WIDTH as f32 / 2.,
+                HEIGHT as f32 / 2. + (GRID_BOX * i) as f32,
+            );
+            self.pos.push(new_cell);
+        }
+    }
     pub fn update(&mut self) {
         let mut old_cell_pos = self.pos[0];
 
         // Head
         match self.head_dir {
-            Direction::Up => self.pos[0].y -= GRID_BOX,
-            Direction::Down => self.pos[0].y += GRID_BOX,
-            Direction::Right => self.pos[0].x += GRID_BOX,
-            Direction::Left => self.pos[0].x -= GRID_BOX,
+            Direction::Up => self.pos[0].y -= GRID_BOX as f32,
+            Direction::Down => self.pos[0].y += GRID_BOX as f32,
+            Direction::Right => self.pos[0].x += GRID_BOX as f32,
+            Direction::Left => self.pos[0].x -= GRID_BOX as f32,
         }
 
         // Tail
@@ -73,52 +85,47 @@ impl<'a> Snake<'a> {
 
         self.wall_collistion();
     }
-    pub fn collision(&self) {
+    // that logic of the snake so put it in update
+    // reset snake, i need also to rest snake score and pause the game with a defait in the gamestate (boss)
+    pub fn collision(&mut self) -> bool {
         for i in 1..self.pos.len() {
             if self.pos[0] == self.pos[i] {
-                println!("snake head collide with his tail !");
-                // TODO make like you Lose text or something
+                return true;
             }
         }
+        return false;
     }
     pub fn draw(&self) {
         for (i, cell) in self.pos.iter().enumerate() {
             if i == 0 {
-                draw_rectangle(
-                    cell.x,
-                    cell.y,
-                    SNAKE_SIZE,
-                    SNAKE_SIZE,
-                    Color {
-                        r: 0.156863,
-                        g: 0.360784,
-                        b: 0.768627,
-                        a: 1.0,
-                    },
-                );
-                // draw_texture(&self.texture.tail_sprite, cell.x, cell.y, WHITE);
+                // draw_rectangle(
+                //     cell.x,
+                //     cell.y,
+                //     SNAKE_SIZE,
+                //     SNAKE_SIZE,
+                //     Color {
+                //         r: 0.156863,
+                //         g: 0.360784,
+                //         b: 0.768627,
+                //         a: 1.0,
+                //     },
+                // );
+                draw_texture(&self.texture.tail_sprite, cell.x, cell.y, WHITE);
             } else {
-                draw_rectangle(
-                    cell.x,
-                    cell.y,
-                    SNAKE_SIZE,
-                    SNAKE_SIZE,
-                    Color {
-                        r: 0.078431,
-                        g: 0.203922,
-                        b: 0.392157,
-                        a: 1.0,
-                    },
-                );
-                // draw_texture(&self.texture.haid_sprite, cell.x, cell.y, WHITE);
+                // draw_rectangle(
+                //     cell.x,
+                //     cell.y,
+                //     SNAKE_SIZE,
+                //     SNAKE_SIZE,
+                //     Color {
+                //         r: 0.078431,
+                //         g: 0.203922,
+                //         b: 0.392157,
+                //         a: 1.0,
+                //     },
+                // );
+                draw_texture(&self.texture.haid_sprite, cell.x, cell.y, WHITE);
             }
         }
     }
 }
-/*
-make gradient on snake body using the blue one, or it could be rainbow
-make a score
-make Ui struct ? and methods
-
-- i have very nive ideas but i am on debt of trying to implemnet them
-*/
