@@ -31,7 +31,7 @@ async fn main() {
 
     // building snake
     let mut snake_cells_position = Vec::new();
-    for i in 0..=10 {
+    for i in 0..=2 {
         let new_cell = Vec2::new(
             WIDTH as f32 / 2.,
             HEIGHT as f32 / 2. + (GRID_BOX * i) as f32,
@@ -59,13 +59,9 @@ async fn main() {
     );
 
     // building Ui
-    let ui: Ui = Ui::new(game_running);
+    let ui: Ui = Ui::new();
 
     // building state, run the main loop
     let mut game: App = App::new(snake, food, ui, &mut score, game_running, is_app_running);
     game.run().await;
 }
-
-/*
-- can you please fix the position of the window on the web...
-*/

@@ -53,7 +53,7 @@ impl<'a> Snake<'a> {
         // if the player press r then reset and remove the defaited display
         self.head_dir = Direction::Up;
         self.pos.clear();
-        for i in 0..=10 {
+        for i in 0..=2 {
             let new_cell = Vec2::new(
                 WIDTH as f32 / 2.,
                 HEIGHT as f32 / 2. + (GRID_BOX * i) as f32,
@@ -95,37 +95,52 @@ impl<'a> Snake<'a> {
         }
         return false;
     }
+    pub fn grow(&mut self) {
+        let new_snake_cell = Vec2::new(
+            self.pos[self.pos.len() - 1].x,
+            self.pos[self.pos.len() - 1].y,
+        );
+        self.pos.push(new_snake_cell);
+    }
     pub fn draw(&self) {
-        for (i, cell) in self.pos.iter().enumerate() {
-            if i == 0 {
-                // draw_rectangle(
-                //     cell.x,
-                //     cell.y,
-                //     SNAKE_SIZE,
-                //     SNAKE_SIZE,
-                //     Color {
-                //         r: 0.156863,
-                //         g: 0.360784,
-                //         b: 0.768627,
-                //         a: 1.0,
-                //     },
-                // );
-                draw_texture(&self.texture.tail_sprite, cell.x, cell.y, WHITE);
-            } else {
-                // draw_rectangle(
-                //     cell.x,
-                //     cell.y,
-                //     SNAKE_SIZE,
-                //     SNAKE_SIZE,
-                //     Color {
-                //         r: 0.078431,
-                //         g: 0.203922,
-                //         b: 0.392157,
-                //         a: 1.0,
-                //     },
-                // );
-                draw_texture(&self.texture.haid_sprite, cell.x, cell.y, WHITE);
-            }
+        self.draw_tail();
+        self.draw_head();
+    }
+    fn draw_tail(&self) {
+        for cell in self.pos.iter() {
+            // draw_rectangle(
+            //     cell.x,
+            //     cell.y,
+            //     SNAKE_SIZE,
+            //     SNAKE_SIZE,
+            //     Color {
+            //         r: 0.078431,
+            //         g: 0.203922,
+            //         b: 0.392157,
+            //         a: 1.0,
+            //     },
+            // );
+            draw_texture(&self.texture.tail_sprite, cell.x, cell.y, WHITE);
         }
+    }
+    fn draw_head(&self) {
+        // draw_rectangle(
+        //     cell.x,
+        //     cell.y,
+        //     SNAKE_SIZE,
+        //     SNAKE_SIZE,
+        //     Color {
+        //         r: 0.156863,
+        //         g: 0.360784,
+        //         b: 0.768627,
+        //         a: 1.0,
+        //     },
+        // );
+        draw_texture(
+            &self.texture.head_sprite,
+            self.pos[0].x,
+            self.pos[0].y,
+            WHITE,
+        );
     }
 }

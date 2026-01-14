@@ -1,6 +1,6 @@
 # Playing the game via web
 https://d7mnch.github.io/snake_rust_macroquad/
-# Build it from source
+# Build the game from source
 - you need to install rust via this commend 
 ```bash
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
@@ -29,8 +29,14 @@ building a snake game to learn more about rust using the macroquad library, and 
 | `Esc` or `q`  | quit the game           |
 | `Space`       | suspend the game        |
 
+
+## What i learn as a begginer while building this project
+
+- make every struct a mod
+- don't put a struct as a parameter on other struct like food have snake parameter on it's field, instead make a struct that group them (App), inside it (App) make the method there that need multiple struct
+
+
 ## TODO
 
 - [ ] make Screenshots
-- [ ] how to build the game from source
-- [ ] fix the snake look when a texture applied to him 
+- [ ] make a licence

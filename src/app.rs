@@ -14,6 +14,41 @@ pub struct App<'a> {
     is_app_running: bool,
 }
 impl<'a> App<'a> {
+    // if food spawns inside snake body
+    pub fn checking_food_pos(&mut self) {
+        for snake_cell in &self.snake.pos {
+            for food_cell in &mut self.food.pos {
+                if *food_cell == *snake_cell {
+                    *food_cell = Vec2::new(random_spot(WIDTH), random_spot(HEIGHT));
+                }
+            }
+        }
+    }
+    pub fn spawn_food(&mut self) {
+        for food_cell in &mut self.food.pos {
+            if self.snake.pos[0] == *food_cell {
+                self.snake.grow();
+            }
+        }
+        self.checking_food_pos();
+    }
+    pub fn check_collistion_to_reset(&mut self) -> bool {
+        if self.snake.collision() {
+            self.game_running = false;
+
+            return true;
+        }
+        return false;
+    }
+    pub fn score(&mut self) {
+        for food_cell in &self.food.pos {
+            if self.snake.pos[0] == *food_cell {
+                *self.score += 1;
+            }
+        }
+    }
+}
+impl<'a> App<'a> {
     pub fn new(
         snake: Snake<'a>,
         food: Food<'a>,
@@ -37,53 +72,35 @@ impl<'a> App<'a> {
         } else if is_key_pressed(KeyCode::Space) && !self.snake.collision() {
             self.game_running = !self.game_running;
         } else if is_key_pressed(KeyCode::R) {
+            self.game_running = false;
+            if self.snake.pos.len() != 3 && *self.score != 0 {
+                println!("is this even working ?");
+                self.food.reset();
+                self.checking_food_pos();
+            }
             self.snake.reset();
+
             *self.score = 0;
         }
     }
     pub fn input_handling(&mut self) -> i32 {
         self.snake.input_handling()
     }
-    pub fn update_food(&mut self, food: &mut Food, snake: &mut Snake) {
-        for food_cell in &mut food.pos {
-            if snake.pos[0] == *food_cell {
-                // make new cell for the snake, spwan it on his last tail cell
-
-                // make a new snake_cell
-                let new_snake_cell = Vec2::new(
-                    snake.pos[snake.pos.len() - 1].x,
-                    snake.pos[snake.pos.len() - 1].y,
-                );
-                snake.pos.push(new_snake_cell);
-
-                // reposition the food_cell
-                *food_cell = Vec2::new(random_spot(WIDTH), random_spot(HEIGHT));
-            }
-        }
-    }
-    pub fn check_to_reset(&mut self) -> bool {
-        if self.snake.collision() {
-            self.game_running = false;
-
-            return true;
-        }
-        return false;
-    }
     pub fn update(&mut self) {
         self.snake.update();
-        self.check_to_reset();
         self.score();
-        self.food.update(&mut self.snake);
-        // i think cause of loop
-        // self.update_food(&mut self.food, &mut self.snake);
+        self.spawn_food();
+        self.check_collistion_to_reset();
     }
     pub fn draw(&mut self) {
         clear_background(BLACK);
         self.snake.draw();
         self.food.draw();
-        // grid_draw();
+        self.ui.display_padding();
+        // self.ui.grid_draw();
         if !self.game_running && !self.snake.collision() {
             self.ui.display_pause();
+            self.ui.display_greetings();
         }
         self.ui.display_score(&self.score);
 
@@ -92,14 +109,8 @@ impl<'a> App<'a> {
             self.ui.display_play_again_or_quit();
         }
     }
-    pub fn score(&mut self) {
-        for food_cell in &self.food.pos {
-            if self.snake.pos[0] == *food_cell {
-                *self.score += 1;
-            }
-        }
-    }
     pub async fn run(&mut self) {
+        self.checking_food_pos();
         let mut time_since_last_update = 0.0;
         let mut input_handling_counter: i32 = 0;
 
@@ -111,7 +122,8 @@ impl<'a> App<'a> {
                 //with this i am combining frames
                 time_since_last_update += dt;
 
-                // sometimes the tick frame (where the update happend) will not run on everyframe
+                // sometimes the tick frame (where the actual the update happend) will not run
+                //on everyframe
                 //so input_handling can run change direction multiple times
                 // i want to accept direction modification once, until the tick happend !
                 if input_handling_counter == 0 {
