@@ -1,6 +1,6 @@
 use crate::config::*;
 use macroquad::prelude::*;
-pub struct Ui {}
+pub struct Ui;
 impl Ui {
     pub fn new() -> Self {
         Self {}
@@ -78,24 +78,31 @@ impl Ui {
         let color = GRAY;
 
         draw_text(
-            "Move:  h j k l",
+            "Move:  a w s d  (Normal)",
             center_x - magic_num,
             100.0,
             text_size,
             color,
         );
-        draw_text("Restart:  r", center_x - magic_num, 150.0, text_size, color);
+        draw_text(
+            "Move:  h k j l (Hard)",
+            center_x - magic_num,
+            150.0,
+            text_size,
+            color,
+        );
+        draw_text("Restart:  r", center_x - magic_num, 250.0, text_size, color);
         draw_text(
             "Pause:  space",
             center_x - magic_num,
-            200.0,
+            300.0,
             text_size,
             color,
         );
         draw_text(
             "Quit:  q / esc",
             center_x - magic_num,
-            250.0,
+            350.0,
             text_size,
             color,
         );

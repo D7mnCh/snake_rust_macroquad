@@ -25,11 +25,11 @@ impl<'a> App<'a> {
         }
     }
     pub fn spawn_food(&mut self) {
-        for food_cell in &mut self.food.pos {
+        self.food.pos.iter().for_each(|food_cell| {
             if self.snake.pos[0] == *food_cell {
                 self.snake.grow();
             }
-        }
+        });
         self.checking_food_pos();
     }
     pub fn check_collistion_to_reset(&mut self) -> bool {
@@ -41,11 +41,11 @@ impl<'a> App<'a> {
         return false;
     }
     pub fn score(&mut self) {
-        for food_cell in &self.food.pos {
+        self.food.pos.iter().for_each(|food_cell| {
             if self.snake.pos[0] == *food_cell {
                 *self.score += 1;
             }
-        }
+        });
     }
 }
 impl<'a> App<'a> {

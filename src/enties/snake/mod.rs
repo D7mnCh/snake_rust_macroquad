@@ -33,16 +33,16 @@ impl<'a> Snake<'a> {
         }
     }
     pub fn input_handling(&mut self) -> i32 {
-        if is_key_pressed(KeyCode::J) && self.head_dir.can_change_to(Direction::Down) {
+        if (is_key_pressed(KeyCode::J) || is_key_pressed(KeyCode::S)) && self.head_dir.can_change_to(Direction::Down) {
             self.head_dir = Direction::Down;
             1
-        } else if is_key_pressed(KeyCode::K) && self.head_dir.can_change_to(Direction::Up) {
+        } else if ( is_key_pressed(KeyCode::K) || is_key_pressed(KeyCode::W)) && self.head_dir.can_change_to(Direction::Up) {
             self.head_dir = Direction::Up;
             1
-        } else if is_key_pressed(KeyCode::H) && self.head_dir.can_change_to(Direction::Left) {
+        } else if (is_key_pressed(KeyCode::H) || is_key_pressed(KeyCode::A)) && self.head_dir.can_change_to(Direction::Left) {
             self.head_dir = Direction::Left;
             1
-        } else if is_key_pressed(KeyCode::L) && self.head_dir.can_change_to(Direction::Right) {
+        } else if (is_key_pressed(KeyCode::L) || is_key_pressed(KeyCode::D)) && self.head_dir.can_change_to(Direction::Right) {
             self.head_dir = Direction::Right;
             1
         } else {

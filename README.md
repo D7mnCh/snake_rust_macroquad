@@ -9,7 +9,7 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 - then cargo run
 
 # snake_rust_macroquad
-building a snake game to learn more about rust using the macroquad library, and farming some greens to satisfy myself and feel like a real programmer
+building a snake game to learn more about rust using the `macroquad` library, and farming some greens to satisfy myself and feel like a real programmer
 
 ## Control the snake
 
@@ -30,13 +30,14 @@ building a snake game to learn more about rust using the macroquad library, and 
 | `Space`       | suspend the game        |
 
 
-## What i learn as a begginer while building this project
+## What i learn as a beginner while building this project
 
 - make every struct a mod
-- don't put a struct as a parameter on other struct like food have snake parameter on it's field, instead make a struct that group them (App), inside it (App) make the method there that need multiple struct
-
+- don't put another struct inside a struct as a parameter, instead use a struct them group them all (App)
+- i kinda feel why people choose game engine especially for ui...
 
 ## TODO
 
 - [ ] make Screenshots
 - [ ] make a licence
+- [ ] fix the [!note] thing
