@@ -8,6 +8,7 @@ pub enum Direction {
 impl Direction {
     pub fn can_change_to(&self, other: Direction) -> bool {
         !matches!(
+            // (expression, pattern)
             (self, other),
             (Direction::Up, Direction::Down)
                 | (Direction::Down, Direction::Up)

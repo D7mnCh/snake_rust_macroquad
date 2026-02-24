@@ -20,8 +20,6 @@ building a snake game to learn more about rust using the `macroquad` library, an
 | `h`  | move snake right      |
 | `l`  | move snake left       |
 
-> [!note] why not arrow keys ?
-> the answer is.. i like using vim motion, i don't really care if you don't like it...
 
 ## Settings
 | Keys          | action                  |
@@ -35,6 +33,10 @@ building a snake game to learn more about rust using the `macroquad` library, an
 - make every struct a mod
 - don't put another struct inside a struct as a parameter, instead use a struct them group them all (App)
 - i kinda feel why people choose game engine especially for ui...
+- fields should be owned by the struct (usually), but you can make sorta of a wrapper to that reference, that can represent identity(new information) of the struct !
+    - like sprite, instead of having reference to the texture, i make spirte use an enum that represent that texture
+- if you want to introduce references, pass them as arguments
+- if fields are sub of other fields, just pick one field (no duplication)
 
 ## TODO
 

@@ -1,19 +1,17 @@
 use crate::config::*;
-use crate::enties::{food::Food, snake::Snake};
+use crate::assets::Assets;
+use crate::game_state::GameState;
+use crate::entities::Entities;
 use crate::functions::*;
 use crate::ui::*;
-
 use macroquad::prelude::*;
 
-pub struct App<'a> {
-    snake: Snake<'a>,
-    food: Food<'a>,
+pub struct App {
+    entites: Entities,
     ui: Ui,
-    score: &'a mut i32,
-    game_running: bool,
-    is_app_running: bool,
+    game_state: GameState,
 }
-impl<'a> App<'a> {
+impl App {
     // if food spawns inside snake body
     pub fn checking_food_pos(&mut self) {
         for snake_cell in &self.snake.pos {
@@ -48,20 +46,22 @@ impl<'a> App<'a> {
         });
     }
 }
-impl<'a> App<'a> {
-    pub fn new(
-        snake: Snake<'a>,
-        food: Food<'a>,
-        ui: Ui,
-        score: &'a mut i32,
-        game_running: bool,
-        is_app_running: bool,
-    ) -> Self {
+impl App {
+    pub async fn new() -> Self {
+        rand::srand(macroquad::miniquad::date::now() as _);
+
+        // for game loop
+        // make an enum
+        let game_running: bool = false;
+        // make a loop that rust has
+        let is_app_running: bool = true;
+
+        let assets = Assets::load().await;
+        let entities = Entities::new();
+        let ui: Ui = Ui::new();
+
         Self {
-            snake,
-            food,
             ui,
-            score,
             game_running,
             is_app_running,
         }

@@ -1,22 +1,41 @@
 // use grids first, with the snake move on one direcetion
-use crate::config::*;
 pub mod direction;
 
-use crate::Assests;
-use direction::*;
+use crate::assets::*;
+use crate::config::*;
+use crate::traits::*;
+use direction::Direction;
 use macroquad::prelude::*;
 
-pub struct Snake<'a> {
+pub struct Snake {
     pub pos: Vec<Vec2>,
     pub head_dir: Direction,
-    texture: &'a Assests,
+    head_sprite: SpriteId,
+    tail_sprite: SpriteId,
+    score: i32,
 }
-impl<'a> Snake<'a> {
-    pub fn new(pos: Vec<Vec2>, head_dir: Direction, texture: &'a Assests) -> Self {
+impl Snake {
+    pub fn new() -> Self {
+        let mut pos = Vec::new();
+        let num_of_cell = 2;
+        for i in 0..=num_of_cell {
+            let new_cell = Vec2::new(
+                WIDTH as f32 / 2.,
+                HEIGHT as f32 / 2. + (GRID_BOX * i) as f32,
+            );
+            pos.push(new_cell);
+        }
+        let head_sprite = SpriteId::HeadSprite;
+        let tail_sprite = SpriteId::TailSprite;
+        let head_dir = Direction::Up;
+        let score = 0;
+
         Self {
             pos,
             head_dir,
-            texture,
+            head_sprite,
+            tail_sprite,
+            score
         }
     }
     fn wall_collistion(&mut self) {
@@ -32,17 +51,26 @@ impl<'a> Snake<'a> {
             }
         }
     }
+    // umm what ?, i need to change that
     pub fn input_handling(&mut self) -> i32 {
-        if (is_key_pressed(KeyCode::J) || is_key_pressed(KeyCode::S)) && self.head_dir.can_change_to(Direction::Down) {
+        if (is_key_pressed(KeyCode::J) || is_key_pressed(KeyCode::S))
+            && self.head_dir.can_change_to(Direction::Down)
+        {
             self.head_dir = Direction::Down;
             1
-        } else if ( is_key_pressed(KeyCode::K) || is_key_pressed(KeyCode::W)) && self.head_dir.can_change_to(Direction::Up) {
+        } else if (is_key_pressed(KeyCode::K) || is_key_pressed(KeyCode::W))
+            && self.head_dir.can_change_to(Direction::Up)
+        {
             self.head_dir = Direction::Up;
             1
-        } else if (is_key_pressed(KeyCode::H) || is_key_pressed(KeyCode::A)) && self.head_dir.can_change_to(Direction::Left) {
+        } else if (is_key_pressed(KeyCode::H) || is_key_pressed(KeyCode::A))
+            && self.head_dir.can_change_to(Direction::Left)
+        {
             self.head_dir = Direction::Left;
             1
-        } else if (is_key_pressed(KeyCode::L) || is_key_pressed(KeyCode::D)) && self.head_dir.can_change_to(Direction::Right) {
+        } else if (is_key_pressed(KeyCode::L) || is_key_pressed(KeyCode::D))
+            && self.head_dir.can_change_to(Direction::Right)
+        {
             self.head_dir = Direction::Right;
             1
         } else {
@@ -50,7 +78,6 @@ impl<'a> Snake<'a> {
         }
     }
     pub fn reset(&mut self) {
-        // if the player press r then reset and remove the defaited display
         self.head_dir = Direction::Up;
         self.pos.clear();
         for i in 0..=2 {
@@ -85,8 +112,7 @@ impl<'a> Snake<'a> {
 
         self.wall_collistion();
     }
-    // that logic of the snake so put it in update
-    // reset snake, i need also to rest snake score and pause the game with a defait in the gamestate (boss)
+
     pub fn collision(&mut self) -> bool {
         for i in 1..self.pos.len() {
             if self.pos[0] == self.pos[i] {
@@ -95,6 +121,7 @@ impl<'a> Snake<'a> {
         }
         return false;
     }
+
     pub fn grow(&mut self) {
         let new_snake_cell = Vec2::new(
             self.pos[self.pos.len() - 1].x,
@@ -102,45 +129,15 @@ impl<'a> Snake<'a> {
         );
         self.pos.push(new_snake_cell);
     }
-    pub fn draw(&self) {
-        self.draw_tail();
-        self.draw_head();
-    }
-    fn draw_tail(&self) {
+}
+
+impl Renderable for Snake {
+    async fn draw(&self, assets: &Assets) {
+        let head_texture = self.head_sprite.get_texture(assets).await;
+        let tail_texture = self.tail_sprite.get_texture(assets).await;
         for cell in self.pos.iter() {
-            // draw_rectangle(
-            //     cell.x,
-            //     cell.y,
-            //     SNAKE_SIZE,
-            //     SNAKE_SIZE,
-            //     Color {
-            //         r: 0.078431,
-            //         g: 0.203922,
-            //         b: 0.392157,
-            //         a: 1.0,
-            //     },
-            // );
-            draw_texture(&self.texture.tail_sprite, cell.x, cell.y, WHITE);
+            draw_texture(tail_texture, cell.x, cell.y, WHITE);
         }
-    }
-    fn draw_head(&self) {
-        // draw_rectangle(
-        //     cell.x,
-        //     cell.y,
-        //     SNAKE_SIZE,
-        //     SNAKE_SIZE,
-        //     Color {
-        //         r: 0.156863,
-        //         g: 0.360784,
-        //         b: 0.768627,
-        //         a: 1.0,
-        //     },
-        // );
-        draw_texture(
-            &self.texture.head_sprite,
-            self.pos[0].x,
-            self.pos[0].y,
-            WHITE,
-        );
+        draw_texture( head_texture, self.pos[0].x, self.pos[0].y, WHITE,);
     }
 }
