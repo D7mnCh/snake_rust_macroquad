@@ -5,68 +5,68 @@ impl Ui {
     pub fn new() -> Self {
         Self {}
     }
-    pub fn display_score(&self, score: &i32) {
-        let score = format!("Score: {}", score);
+    pub fn display_score(&self, snake_score: &i32, config: &Config) {
+        let score = format!("Score: {}", snake_score);
         draw_text(
             score.as_str(),
-            WIDTH as f32 / 2.7,
-            HEIGHT as f32 / 17.,
+            config.screen_width as f32 / 2.7,
+            config.screen_height as f32 / 17.,
             50.,
             ORANGE,
         );
     }
-    pub fn display_pause(&self) {
+    pub fn display_pause(&self,config: &Config) {
         draw_text(
             "Press space to play",
-            WIDTH as f32 / 5.,
-            HEIGHT as f32 / 1.07,
+            config.screen_width as f32 / 5.,
+            config.screen_height as f32 / 1.07,
             55.,
             GRAY,
         );
     }
-    pub fn dispay_defait(&self) {
+    pub fn display_defeat(&self, config: &Config) {
         draw_text(
             "Defaited",
-            WIDTH as f32 / 3.4,
-            HEIGHT as f32 / 3.5,
+            config.screen_width as f32 / 3.4,
+            config.screen_height as f32 / 3.5,
             80.,
             GRAY,
         );
     }
-    pub fn display_play_again_or_quit(&self) {
+    pub fn display_play_again_or_quit(&self, config: &Config) {
         draw_text(
             "Press R to play again",
-            WIDTH as f32 / 5.7,
-            HEIGHT as f32 / 1.5,
+            config.screen_width as f32 / 5.7,
+            config.screen_height as f32 / 1.5,
             60.,
             GRAY,
         );
-        draw_text("or", WIDTH as f32 / 2.2, HEIGHT as f32 / 1.7, 60., GRAY);
+        draw_text("or", config.screen_width as f32 / 2.2, config.screen_height as f32 / 1.7, 60., GRAY);
         draw_text(
             "Press Q/Escape to quit",
-            WIDTH as f32 / 6.2,
-            HEIGHT as f32 / 2.,
+            config.screen_width as f32 / 6.2,
+            config.screen_height as f32 / 2.,
             60.,
             GRAY,
         );
     }
-    pub fn display_padding(&self) {
+    pub fn display_padding(&self, config: &Config) {
         let line_thikness = 5.;
-        draw_line(0., 0., WIDTH as f32, 0., line_thikness, DARKBLUE);
+        draw_line(0., 0., config.screen_width as f32, 0., line_thikness, DARKBLUE);
         draw_line(
             0.,
-            HEIGHT as f32,
-            WIDTH as f32,
-            HEIGHT as f32,
+            config.screen_height as f32,
+            config.screen_width as f32,
+            config.screen_height as f32,
             line_thikness,
             DARKBLUE,
         );
-        draw_line(0., 0., 0., HEIGHT as f32, line_thikness, DARKBLUE);
+        draw_line(0., 0., 0., config.screen_height as f32, line_thikness, DARKBLUE);
         draw_line(
-            WIDTH as f32,
+            config.screen_width as f32,
             0.,
-            WIDTH as f32,
-            HEIGHT as f32,
+            config.screen_width as f32,
+            config.screen_height as f32,
             line_thikness,
             DARKBLUE,
         );
@@ -107,12 +107,12 @@ impl Ui {
             color,
         );
     }
-    pub fn _grid_draw(&self) {
-        for x in 0..=WIDTH {
-            for y in 0..=WIDTH {
-                if x % GRID_BOX as i32 == 0 && y % GRID_BOX as i32 == 0 {
-                    draw_line(x as f32, 0., x as f32, HEIGHT as f32, 1., GRAY);
-                    draw_line(0., y as f32, WIDTH as f32, y as f32, 1., GRAY);
+    pub fn _grid_draw(&self, config: &Config) {
+        for x in 0..=config.screen_width {
+            for y in 0..=config.screen_width {
+                if x % config.grid_box as i32 == 0 && y % config.grid_box as i32 == 0 {
+                    draw_line(x as f32, 0., x as f32, config.screen_height as f32, 1., GRAY);
+                    draw_line(0., y as f32, config.screen_width as f32, y as f32, 1., GRAY);
                 }
             }
         }

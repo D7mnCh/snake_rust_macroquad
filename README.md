@@ -37,6 +37,7 @@ building a snake game to learn more about rust using the `macroquad` library, an
     - like sprite, instead of having reference to the texture, i make spirte use an enum that represent that texture
 - if you want to introduce references, pass them as arguments
 - if fields are sub of other fields, just pick one field (no duplication)
+- if a function deponds on multiple entities, make it a system not a method of a struct
 
 ## TODO
 

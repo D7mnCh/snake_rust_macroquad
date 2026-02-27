@@ -1,150 +1,105 @@
-use crate::config::*;
 use crate::assets::Assets;
-use crate::game_state::GameState;
+use crate::systems::*;
+use crate::config::Config;
 use crate::entities::Entities;
-use crate::functions::*;
-use crate::ui::*;
+use crate::game_state::GameState;
+use crate::ui::Ui;
 use macroquad::prelude::*;
 
 pub struct App {
-    entites: Entities,
-    ui: Ui,
+    entities: Entities,
+    config: Config,
     game_state: GameState,
-}
-impl App {
-    // if food spawns inside snake body
-    pub fn checking_food_pos(&mut self) {
-        for snake_cell in &self.snake.pos {
-            for food_cell in &mut self.food.pos {
-                if *food_cell == *snake_cell {
-                    *food_cell = Vec2::new(random_spot(WIDTH), random_spot(HEIGHT));
-                }
-            }
-        }
-    }
-    pub fn spawn_food(&mut self) {
-        self.food.pos.iter().for_each(|food_cell| {
-            if self.snake.pos[0] == *food_cell {
-                self.snake.grow();
-            }
-        });
-        self.checking_food_pos();
-    }
-    pub fn check_collistion_to_reset(&mut self) -> bool {
-        if self.snake.collision() {
-            self.game_running = false;
-
-            return true;
-        }
-        return false;
-    }
-    pub fn score(&mut self) {
-        self.food.pos.iter().for_each(|food_cell| {
-            if self.snake.pos[0] == *food_cell {
-                *self.score += 1;
-            }
-        });
-    }
+    assets: Assets,
+    ui: Ui,
 }
 impl App {
     pub async fn new() -> Self {
-        rand::srand(macroquad::miniquad::date::now() as _);
-
-        // for game loop
-        // make an enum
-        let game_running: bool = false;
-        // make a loop that rust has
-        let is_app_running: bool = true;
-
+        //rand::srand(macroquad::miniquad::date::now() as _);
+        let config = Config::new();
         let assets = Assets::load().await;
-        let entities = Entities::new();
+        let entities = Entities::new(&config);
         let ui: Ui = Ui::new();
+        let game_state = GameState::Pausing;
 
         Self {
+            config,
             ui,
-            game_running,
-            is_app_running,
+            assets,
+            entities,
+            game_state,
         }
-    }
-    pub fn config_input_handling(&mut self) {
-        if is_key_pressed(KeyCode::Escape) || is_key_pressed(KeyCode::Q) {
-            self.is_app_running = !self.is_app_running;
-        } else if is_key_pressed(KeyCode::Space) && !self.snake.collision() {
-            self.game_running = !self.game_running;
-        } else if is_key_pressed(KeyCode::R) {
-            self.game_running = false;
-            if self.snake.pos.len() != 3 && *self.score != 0 {
-                println!("is this even working ?");
-                self.food.reset();
-                self.checking_food_pos();
-            }
-            self.snake.reset();
-
-            *self.score = 0;
-        }
-    }
-    pub fn input_handling(&mut self) -> i32 {
-        self.snake.input_handling()
     }
     pub fn update(&mut self) {
-        self.snake.update();
-        self.score();
-        self.spawn_food();
-        self.check_collistion_to_reset();
+        self.entities.snake.update(&self.config);
+        add_score(&mut self.entities.snake, &mut self.entities.food);
+        spawn_food(&mut self.entities.snake, &mut self.entities.food);
+        //check_collistion_to_reset();
     }
     pub fn draw(&mut self) {
         clear_background(BLACK);
-        self.snake.draw();
-        self.food.draw();
-        self.ui.display_padding();
+        self.entities.draw(&self.assets);
+        self.ui.display_padding(&self.config);
         // self.ui.grid_draw();
-        if !self.game_running && !self.snake.collision() {
+        /*
+        if !self.game_running && !self.entities.snake.collision() {
             self.ui.display_pause();
             self.ui.display_greetings();
         }
         self.ui.display_score(&self.score);
 
-        if self.snake.collision() {
+        if self.entities.snake.collision() {
             self.ui.dispay_defait();
             self.ui.display_play_again_or_quit();
         }
+        */
     }
     pub async fn run(&mut self) {
-        self.checking_food_pos();
+        checking_food_pos(&self.entities.snake, &mut self.entities.food, &self.config);
         let mut time_since_last_update = 0.0;
-        let mut input_handling_counter: i32 = 0;
 
-        while self.is_app_running {
-            self.config_input_handling();
+        loop {
+            self.game_state.config_input_handling();
+            match self.game_state {
+                GameState::Running =>{
+                    let dt = get_frame_time();
+                    //with this i am combining frames
+                    time_since_last_update += dt;
 
-            if self.game_running {
-                let dt = get_frame_time();
-                //with this i am combining frames
-                time_since_last_update += dt;
+                    // sometimes the tick frame (where the actual the update happend) will not run
+                    //on everyframe
+                    //so input_handling can run change direction multiple times
+                    // i want to accept direction modification once, until the tick happend !
+                    if time_since_last_update >= self.config.target_fps {
+                        self.entities.snake.input_handling();
+                        self.update();
+                        self.ui.display_score(&self.entities.snake.score, &self.config);
 
-                // sometimes the tick frame (where the actual the update happend) will not run
-                //on everyframe
-                //so input_handling can run change direction multiple times
-                // i want to accept direction modification once, until the tick happend !
-                if input_handling_counter == 0 {
-                    input_handling_counter = self.input_handling();
-                }
-
-                if time_since_last_update >= TARGET_FPS {
-                    self.update();
-                    time_since_last_update = 0.0;
-                    input_handling_counter = 0;
-
-                    // Logging
-                    for (i, cell) in self.snake.pos.iter().enumerate() {
-                        println!("[Info] cell num {i} position is : {:?}", cell);
+                        time_since_last_update = 0.0;
+                        // Logging
+                        for (i, cell) in self.entities.snake.pos.iter().enumerate() {
+                            println!("[Info] cell num {i} position is : {:?}", cell);
+                        }
+                        println!();
+                        println!("[Info] entities.snake score: {}", self.entities.snake.score);
                     }
-                    println!();
-                    println!("[Info] snake score: {}", self.score);
-                    println!();
-                    println!("[Info] the main loop is : {}", self.is_app_running);
+                },
+                GameState::Resetting => {
+                    todo!()
+                },
+                GameState::Pausing => {
+                    self.ui.display_pause(&self.config);
+                    self.ui.display_greetings();
+                },
+                GameState::GameOver => {
+                    todo!()
+                },
+                GameState::Defeat => {
+                    self.ui.display_defeat(&self.config);
+                    self.ui.display_play_again_or_quit(&self.config);
                 }
             }
+
 
             self.draw();
             next_frame().await;

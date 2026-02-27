@@ -3,13 +3,12 @@ mod assets;
 mod config;
 mod entities;
 mod functions;
-mod traits;
-mod ui;
 mod game_state;
 mod systems;
-
-use crate::app::*;
-use crate::functions::*;
+mod traits;
+mod ui;
+use crate::app::App;
+use config::window_conf;
 
 #[macroquad::main(window_conf)]
 async fn main() {

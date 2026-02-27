@@ -9,19 +9,21 @@ use macroquad::prelude::*;
 
 pub struct Snake {
     pub pos: Vec<Vec2>,
+    pub size: f32,
     pub head_dir: Direction,
+    pub score: i32,
     head_sprite: SpriteId,
     tail_sprite: SpriteId,
-    score: i32,
 }
 impl Snake {
-    pub fn new() -> Self {
+    pub fn new(config: &Config) -> Self {
         let mut pos = Vec::new();
+        let size = config.grid_box;
         let num_of_cell = 2;
         for i in 0..=num_of_cell {
             let new_cell = Vec2::new(
-                WIDTH as f32 / 2.,
-                HEIGHT as f32 / 2. + (GRID_BOX * i) as f32,
+                config.screen_width as f32 / 2.,
+                config.screen_height as f32 / 2. + (config.grid_box as i32 * i) as f32,
             );
             pos.push(new_cell);
         }
@@ -32,71 +34,77 @@ impl Snake {
 
         Self {
             pos,
+            size,
             head_dir,
             head_sprite,
             tail_sprite,
-            score
+            score,
         }
     }
-    fn wall_collistion(&mut self) {
+    pub fn check_collistion_to_reset(&mut self) -> bool {
+        if self.self_collision_detection() {
+            //game_running = false;
+
+            return true;
+        }
+        return false;
+    }
+    fn wall_collistion(&mut self, config: &Config) {
         for cell in self.pos.iter_mut() {
-            if cell.x + SNAKE_SIZE > WIDTH as f32 {
+            if cell.x + self.size > config.screen_width as f32 {
                 cell.x = 0.
             } else if cell.x < 0. as f32 {
-                cell.x = WIDTH as f32 - SNAKE_SIZE
-            } else if cell.y + SNAKE_SIZE > HEIGHT as f32 {
+                cell.x = config.screen_width as f32 - self.size
+            } else if cell.y + self.size > config.screen_height as f32 {
                 cell.y = 0.
             } else if cell.y < 0. {
-                cell.y = HEIGHT as f32 - SNAKE_SIZE
+                cell.y = config.screen_height as f32 - self.size
             }
         }
     }
     // umm what ?, i need to change that
-    pub fn input_handling(&mut self) -> i32 {
+    pub fn input_handling(&mut self) {
         if (is_key_pressed(KeyCode::J) || is_key_pressed(KeyCode::S))
             && self.head_dir.can_change_to(Direction::Down)
         {
             self.head_dir = Direction::Down;
-            1
-        } else if (is_key_pressed(KeyCode::K) || is_key_pressed(KeyCode::W))
+        } 
+        if (is_key_pressed(KeyCode::K) || is_key_pressed(KeyCode::W))
             && self.head_dir.can_change_to(Direction::Up)
         {
             self.head_dir = Direction::Up;
-            1
-        } else if (is_key_pressed(KeyCode::H) || is_key_pressed(KeyCode::A))
+        } 
+        if (is_key_pressed(KeyCode::H) || is_key_pressed(KeyCode::A))
             && self.head_dir.can_change_to(Direction::Left)
         {
             self.head_dir = Direction::Left;
-            1
-        } else if (is_key_pressed(KeyCode::L) || is_key_pressed(KeyCode::D))
+        } 
+        if (is_key_pressed(KeyCode::L) || is_key_pressed(KeyCode::D))
             && self.head_dir.can_change_to(Direction::Right)
         {
             self.head_dir = Direction::Right;
-            1
-        } else {
-            0
-        }
+        } 
     }
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self, config: &Config) {
         self.head_dir = Direction::Up;
         self.pos.clear();
         for i in 0..=2 {
             let new_cell = Vec2::new(
-                WIDTH as f32 / 2.,
-                HEIGHT as f32 / 2. + (GRID_BOX * i) as f32,
+                config.screen_width as f32 / 2.,
+                config.screen_height as f32 / 2. + (config.grid_box as i32 * i) as f32,
             );
             self.pos.push(new_cell);
         }
     }
-    pub fn update(&mut self) {
+    pub fn update(&mut self, config: &Config) {
         let mut old_cell_pos = self.pos[0];
 
         // Head
         match self.head_dir {
-            Direction::Up => self.pos[0].y -= GRID_BOX as f32,
-            Direction::Down => self.pos[0].y += GRID_BOX as f32,
-            Direction::Right => self.pos[0].x += GRID_BOX as f32,
-            Direction::Left => self.pos[0].x -= GRID_BOX as f32,
+            Direction::Up => self.pos[0].y -= config.grid_box as f32,
+            Direction::Down => self.pos[0].y += config.grid_box as f32,
+            Direction::Right => self.pos[0].x += config.grid_box as f32,
+            Direction::Left => self.pos[0].x -= config.grid_box as f32,
         }
 
         // Tail
@@ -110,10 +118,11 @@ impl Snake {
             }
         }
 
-        self.wall_collistion();
+        // i think it's bad practice to call methods inside methods !
+        //self.wall_collistion();
     }
 
-    pub fn collision(&mut self) -> bool {
+    pub fn self_collision_detection(&mut self) -> bool {
         for i in 1..self.pos.len() {
             if self.pos[0] == self.pos[i] {
                 return true;
@@ -138,6 +147,6 @@ impl Renderable for Snake {
         for cell in self.pos.iter() {
             draw_texture(tail_texture, cell.x, cell.y, WHITE);
         }
-        draw_texture( head_texture, self.pos[0].x, self.pos[0].y, WHITE,);
+        draw_texture(head_texture, self.pos[0].x, self.pos[0].y, WHITE);
     }
 }
