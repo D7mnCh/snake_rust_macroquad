@@ -1,11 +1,16 @@
-// use grids first, with the snake move on one direcetion
 pub mod direction;
 
 use crate::assets::*;
-use crate::config::*;
+use crate::config::Config;
 use crate::traits::*;
+use crate::game_state::GameState;
 use direction::Direction;
-use macroquad::prelude::*;
+use macroquad::{
+    input::{KeyCode, is_key_pressed},
+    math::Vec2,
+    texture::draw_texture,
+    color::colors::WHITE
+};
 
 pub struct Snake {
     pub pos: Vec<Vec2>,
@@ -41,14 +46,6 @@ impl Snake {
             score,
         }
     }
-    pub fn check_collistion_to_reset(&mut self) -> bool {
-        if self.self_collision_detection() {
-            //game_running = false;
-
-            return true;
-        }
-        return false;
-    }
     fn wall_collistion(&mut self, config: &Config) {
         for cell in self.pos.iter_mut() {
             if cell.x + self.size > config.screen_width as f32 {
@@ -62,31 +59,32 @@ impl Snake {
             }
         }
     }
-    // umm what ?, i need to change that
+    // should break this method
     pub fn input_handling(&mut self) {
         if (is_key_pressed(KeyCode::J) || is_key_pressed(KeyCode::S))
             && self.head_dir.can_change_to(Direction::Down)
         {
             self.head_dir = Direction::Down;
-        } 
+        }
         if (is_key_pressed(KeyCode::K) || is_key_pressed(KeyCode::W))
             && self.head_dir.can_change_to(Direction::Up)
         {
             self.head_dir = Direction::Up;
-        } 
+        }
         if (is_key_pressed(KeyCode::H) || is_key_pressed(KeyCode::A))
             && self.head_dir.can_change_to(Direction::Left)
         {
             self.head_dir = Direction::Left;
-        } 
+        }
         if (is_key_pressed(KeyCode::L) || is_key_pressed(KeyCode::D))
             && self.head_dir.can_change_to(Direction::Right)
         {
             self.head_dir = Direction::Right;
-        } 
+        }
     }
     pub fn reset(&mut self, config: &Config) {
         self.head_dir = Direction::Up;
+        self.score = 0;
         self.pos.clear();
         for i in 0..=2 {
             let new_cell = Vec2::new(
@@ -117,18 +115,16 @@ impl Snake {
                 old_cell_pos = current_cell_pos;
             }
         }
-
-        // i think it's bad practice to call methods inside methods !
-        //self.wall_collistion();
+        self.wall_collistion(&config);
     }
 
-    pub fn self_collision_detection(&mut self) -> bool {
+    pub fn check_collision_detection(&mut self) -> bool {
         for i in 1..self.pos.len() {
             if self.pos[0] == self.pos[i] {
                 return true;
             }
         }
-        return false;
+        false
     }
 
     pub fn grow(&mut self) {
@@ -148,5 +144,29 @@ impl Renderable for Snake {
             draw_texture(tail_texture, cell.x, cell.y, WHITE);
         }
         draw_texture(head_texture, self.pos[0].x, self.pos[0].y, WHITE);
+    }
+}
+impl Updatable for Snake {
+    fn update(&mut self, config: &Config) {
+        let mut old_cell_pos = self.pos[0];
+
+        // Head
+        match self.head_dir {
+            Direction::Up => self.pos[0].y -= config.grid_box as f32,
+            Direction::Down => self.pos[0].y += config.grid_box as f32,
+            Direction::Right => self.pos[0].x += config.grid_box as f32,
+            Direction::Left => self.pos[0].x -= config.grid_box as f32,
+        }
+
+        // Tail
+        for i in 0..self.pos.len() {
+            if i != 0 {
+                // i need to store the postion of the current cell first
+                let current_cell_pos = self.pos[i];
+                self.pos[i].x = old_cell_pos.x;
+                self.pos[i].y = old_cell_pos.y;
+                old_cell_pos = current_cell_pos;
+            }
+        }
     }
 }

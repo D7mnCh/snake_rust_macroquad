@@ -1,36 +1,29 @@
-use macroquad::input::{is_key_pressed, KeyCode};
+use macroquad::input::{KeyCode, is_key_pressed};
 pub enum GameState {
     Running,
     Resetting,
     Pausing,
-    Defeat,
     GameOver,
+    Quit
 }
+
 impl GameState {
     pub fn config_input_handling(&mut self) {
         if is_key_pressed(KeyCode::Escape) || is_key_pressed(KeyCode::Q) {
             match self {
-                _ => *self = GameState::GameOver
+                _ => *self = GameState::Quit,
             }
-        } else if is_key_pressed(KeyCode::Space) /* && !self.snake.collision() */{
+        } else if is_key_pressed(KeyCode::Space) {
             match self {
-                _ => *self = GameState::Pausing
+                GameState::Running => *self = GameState::Pausing,
+                GameState::Pausing => *self = GameState::Running,
+                GameState::Resetting => *self = GameState::Running,
+                _ => ()
             }
         } else if is_key_pressed(KeyCode::R) {
             match self {
-                _ => *self = GameState::Resetting
+                _ => *self = GameState::Resetting,
             }
-            // this logic gonna be inside the main loop for now
-            /*
-            if self.snake.pos.len() != 3 && *self.score != 0 {
-                println!("is this even working ?");
-                self.food.reset();
-                self.checking_food_pos();
-            }
-            self.snake.reset();
-
-            *self.score = 0;
-            */
         }
     }
 }

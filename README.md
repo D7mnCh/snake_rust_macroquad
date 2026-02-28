@@ -29,7 +29,6 @@ building a snake game to learn more about rust using the `macroquad` library, an
 
 
 ## What i learn as a beginner while building this project
-
 - make every struct a mod
 - don't put another struct inside a struct as a parameter, instead use a struct them group them all (App)
 - i kinda feel why people choose game engine especially for ui...
@@ -38,9 +37,11 @@ building a snake game to learn more about rust using the `macroquad` library, an
 - if you want to introduce references, pass them as arguments
 - if fields are sub of other fields, just pick one field (no duplication)
 - if a function deponds on multiple entities, make it a system not a method of a struct
+- if a function/method identifier have `checking` that means it will return a bool
 
 ## TODO
-
+- [ ] i can change direction multiple times before the tick happen ! (fix it )
+- [ ] i can't display ui ?, maybe need to await the draw calls ? (i think because the clear background, yeah for sure, hehe)
 - [ ] make Screenshots
 - [ ] make a licence
 - [ ] fix the [!note] thing

@@ -8,8 +8,8 @@ impl SpriteId {
     pub async fn get_texture<'a>(&self, assets: &'a Assets) -> &'a Texture2D {
         match self {
             Self::HeadSprite => &assets.head_sprite,
-            Self::TailSprite => &assets.head_sprite,
-            Self::FoodSprite => &assets.head_sprite,
+            Self::TailSprite => &assets.tail_sprite,
+            Self::FoodSprite => &assets.food_sprite,
         }
     }
 }

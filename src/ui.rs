@@ -15,7 +15,7 @@ impl Ui {
             ORANGE,
         );
     }
-    pub fn display_pause(&self,config: &Config) {
+    pub fn display_pause(&self, config: &Config) {
         draw_text(
             "Press space to play",
             config.screen_width as f32 / 5.,
@@ -41,7 +41,13 @@ impl Ui {
             60.,
             GRAY,
         );
-        draw_text("or", config.screen_width as f32 / 2.2, config.screen_height as f32 / 1.7, 60., GRAY);
+        draw_text(
+            "or",
+            config.screen_width as f32 / 2.2,
+            config.screen_height as f32 / 1.7,
+            60.,
+            GRAY,
+        );
         draw_text(
             "Press Q/Escape to quit",
             config.screen_width as f32 / 6.2,
@@ -52,7 +58,14 @@ impl Ui {
     }
     pub fn display_padding(&self, config: &Config) {
         let line_thikness = 5.;
-        draw_line(0., 0., config.screen_width as f32, 0., line_thikness, DARKBLUE);
+        draw_line(
+            0.,
+            0.,
+            config.screen_width as f32,
+            0.,
+            line_thikness,
+            DARKBLUE,
+        );
         draw_line(
             0.,
             config.screen_height as f32,
@@ -61,7 +74,14 @@ impl Ui {
             line_thikness,
             DARKBLUE,
         );
-        draw_line(0., 0., 0., config.screen_height as f32, line_thikness, DARKBLUE);
+        draw_line(
+            0.,
+            0.,
+            0.,
+            config.screen_height as f32,
+            line_thikness,
+            DARKBLUE,
+        );
         draw_line(
             config.screen_width as f32,
             0.,
@@ -71,9 +91,9 @@ impl Ui {
             DARKBLUE,
         );
     }
-    pub fn display_greetings(&self) {
+    pub fn display_greetings(&self, config: &Config) {
         let text_size = 55.0;
-        let center_x = 800.0 / 2.0;
+        let center_x = config.screen_width as f32 / 2.0;
         let magic_num = 200.;
         let color = GRAY;
 
@@ -111,7 +131,14 @@ impl Ui {
         for x in 0..=config.screen_width {
             for y in 0..=config.screen_width {
                 if x % config.grid_box as i32 == 0 && y % config.grid_box as i32 == 0 {
-                    draw_line(x as f32, 0., x as f32, config.screen_height as f32, 1., GRAY);
+                    draw_line(
+                        x as f32,
+                        0.,
+                        x as f32,
+                        config.screen_height as f32,
+                        1.,
+                        GRAY,
+                    );
                     draw_line(0., y as f32, config.screen_width as f32, y as f32, 1., GRAY);
                 }
             }
