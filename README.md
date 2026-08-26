@@ -1,3 +1,4 @@
+![Alt text](/screenshots/snake_man.png)
 # Playing the game via web
 https://d7mnch.github.io/snake_rust_macroquad/
 # Build the game from source
@@ -6,7 +7,7 @@ https://d7mnch.github.io/snake_rust_macroquad/
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 ```
 - clone the rep with `git clone`
-- then cargo run
+- then `cd` to that direcotry that you were cloned (if you cd to a subdirectory and not the root one, it will crash), then `cargo run`
 
 # snake_rust_macroquad
 building a snake game to learn more about rust using the `macroquad` library, and farming some greens to satisfy myself and feel like a real programmer
@@ -40,8 +41,11 @@ building a snake game to learn more about rust using the `macroquad` library, an
 - if a function/method identifier have `checking` that means it will return a bool
 
 ## TODO
-- [ ] i can change direction multiple times before the tick happen ! (fix it )
-- [ ] i can't display ui ?, maybe need to await the draw calls ? (i think because the clear background, yeah for sure, hehe)
+- [ ] when restting, food will not spawn randomly
+- [ ] food spawing early when the new spawned food collided with the snake body
 - [ ] make Screenshots
 - [ ] make a licence
 - [ ] fix the [!note] thing
+- [ ] watch other peoples code on how they build snake game (using GitHub and not Youtube)
+- [ ] check update, then draw (remove snake being drawn when she hits it's tail)
+

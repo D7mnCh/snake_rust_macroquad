@@ -39,6 +39,8 @@ pub fn spawn_food(snake: &mut Snake, food: &mut Food, config: &Config){
                 );
                     snake.grow();
             }
+            // TODO: doesn't work like i want, wanna check pos before spawn it
+            // i might need a loop here
             if *food_cell == snake.pos[i] && i > 0{
                 *food_cell = Vec2::new(
                     random_spot(config.screen_width),
@@ -48,7 +50,6 @@ pub fn spawn_food(snake: &mut Snake, food: &mut Food, config: &Config){
         }
     }
 }
-
 pub fn add_score(snake: &mut Snake, food: &Food) {
     food.pos.iter().for_each(|food_cell| {
         if snake.pos[0] == *food_cell {

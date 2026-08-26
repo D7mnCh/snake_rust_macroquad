@@ -37,50 +37,54 @@ impl App {
         spawn_food(&mut self.entities.snake, &mut self.entities.food, &self.config);
     }
     pub async fn draw(&mut self) {
-        clear_background(BLACK);
+        // i should clear frames but it just works i guess
+        //clear_background(BLACK);
         self.entities.draw(&self.assets).await;
-        // both are working normaly, hmm
         self.ui.display_padding(&self.config);
         self.ui._grid_draw(&self.config);
     }
     pub async fn run(&mut self) {
         let mut time_since_last_update = 0.0;
+        // to update snake only one time before the tick happen
+        let mut snake_input_direction_counting = 0;
 
         loop {
+            self.draw().await;
             self.game_state.config_input_handling();
+
             match self.game_state {
                 GameState::Running => {
-                    // accept only one direction in one tick frame
-                    self.entities.snake.input_handling();
+                    self.entities.snake.input_handling(&mut snake_input_direction_counting);
+                    self.ui
+                        .display_score(&self.entities.snake.score, &self.config);
+
                     let dt = get_frame_time();
-                    // with this i am combining frames
                     time_since_last_update += dt;
-                    // sometimes the tick frame (where the actual the update happend) will not run
-                    //on everyframe
-                    // so input_handling can run change direction multiple times
+
+                    // the tick frame
                     if time_since_last_update >= self.config.target_fps {
                         self.update();
                         if self.entities.snake.check_collision_detection() {
                             self.game_state = GameState::GameOver
                         }
-                        self.ui
-                            .display_score(&self.entities.snake.score, &self.config);
 
                         time_since_last_update = 0.0;
+                        snake_input_direction_counting = 0;
                     }
                         // Logging
-                        for (i, cell) in self.entities.snake.pos.iter().enumerate() {
-                            println!("[Info] cell num {i} position is : {:?}", cell);
-                        }
-                        println!();
-                        println!("[Info] entities.snake score: {}", self.entities.snake.score);
+                       // for (i, cell) in self.entities.snake.pos.iter().enumerate() {
+                       //     println!("[Info] cell num {i} position is : {:?}", cell);
+                       // }
+                       // println!();
+                       // println!("[Info] entities.snake score: {}", self.entities.snake.score);
                 }
                 GameState::Resetting => {
                     self.entities.snake.reset(&self.config);
-                    if self.entities.snake.pos.len() != 3 && self.entities.snake.score != 0 {
+                    // TODO if statement doesn't work
+                    if self.entities.snake.pos.len() > 3 && self.entities.snake.score > 0 {
                         self.entities.food.reset(&self.config);
-                        spawn_food(&mut self.entities.snake, &mut self.entities.food, &self.config)
                     }
+                    self.game_state = GameState::Pausing;
                 }
                 GameState::Pausing => {
                     self.ui.display_pause(&self.config);
@@ -93,7 +97,6 @@ impl App {
                 GameState::Quit => break
             }
 
-            self.draw().await;
             next_frame().await;
         }
     }

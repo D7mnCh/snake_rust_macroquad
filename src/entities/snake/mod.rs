@@ -60,27 +60,33 @@ impl Snake {
         }
     }
     // should break this method
-    pub fn input_handling(&mut self) {
-        if (is_key_pressed(KeyCode::J) || is_key_pressed(KeyCode::S))
-            && self.head_dir.can_change_to(Direction::Down)
-        {
-            self.head_dir = Direction::Down;
-        }
-        if (is_key_pressed(KeyCode::K) || is_key_pressed(KeyCode::W))
-            && self.head_dir.can_change_to(Direction::Up)
-        {
-            self.head_dir = Direction::Up;
-        }
-        if (is_key_pressed(KeyCode::H) || is_key_pressed(KeyCode::A))
-            && self.head_dir.can_change_to(Direction::Left)
-        {
-            self.head_dir = Direction::Left;
-        }
-        if (is_key_pressed(KeyCode::L) || is_key_pressed(KeyCode::D))
-            && self.head_dir.can_change_to(Direction::Right)
-        {
-            self.head_dir = Direction::Right;
-        }
+    pub fn input_handling(&mut self, input_dir_counting: &mut i32) {
+        if *input_dir_counting == 0 {
+            if (is_key_pressed(KeyCode::J) || is_key_pressed(KeyCode::S))
+                && self.head_dir.can_change_to(Direction::Down)
+            {
+                self.head_dir = Direction::Down;
+                *input_dir_counting += 1;
+            }
+            if (is_key_pressed(KeyCode::K) || is_key_pressed(KeyCode::W))
+                && self.head_dir.can_change_to(Direction::Up)
+            {
+                self.head_dir = Direction::Up;
+                *input_dir_counting += 1;
+            }
+            if (is_key_pressed(KeyCode::H) || is_key_pressed(KeyCode::A))
+                && self.head_dir.can_change_to(Direction::Left)
+            {
+                self.head_dir = Direction::Left;
+                *input_dir_counting += 1;
+            }
+            if (is_key_pressed(KeyCode::L) || is_key_pressed(KeyCode::D))
+                && self.head_dir.can_change_to(Direction::Right)
+            {
+                self.head_dir = Direction::Right;
+                *input_dir_counting += 1;
+            }
+        }else{ return }
     }
     pub fn reset(&mut self, config: &Config) {
         self.head_dir = Direction::Up;

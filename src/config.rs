@@ -15,7 +15,8 @@ impl Config {
             screen_height: 800,
             window_title: "Snake",
             grid_box: 40.,
-            target_fps: 1. / 10.,
+            // change this to make more clean
+            target_fps: 1. / 5.,
         }
     }
 }
